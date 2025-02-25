@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Employee, Payroll
 from .forms import EmployeeForm
 
@@ -26,3 +26,20 @@ def add_employee(request):
         form = EmployeeForm()
 
     return render(request, "payroll/add_employee.html", {"form": form})
+
+
+# View to edit employee details
+def edit_employee(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+
+    if request.method == "POST":
+        employee.first_name = request.POST["first_name"]
+        employee.last_name = request.POST["last_name"]
+        employee.email = request.POST["email"]
+        employee.position = request.POST["position"]
+        employee.salary = request.POST["salary"]
+        employee.date_hired = request.POST["date_hired"]
+        employee.save()
+        return redirect("employee_list")
+
+    return render(request, "payroll/edit_employee.html", {"employee": employee})
