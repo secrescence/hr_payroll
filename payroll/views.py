@@ -43,3 +43,10 @@ def edit_employee(request, pk):
         return redirect("employee_list")
 
     return render(request, "payroll/edit_employee.html", {"employee": employee})
+
+
+# View to delete employee
+def delete_employee(request, id):
+    employee = get_object_or_404(Employee, id=id)
+    employee.delete()
+    return redirect("employee_list")
