@@ -5,8 +5,16 @@ from .forms import EmployeeForm
 
 # View to display all employees
 def employee_list(request):
-    employees = Employee.objects.all()  # Get all employees from database
-    return render(request, "payroll/employee_list.html", {"employees": employees})
+    query = request.GET.get("q", "")  # Get search query from URL
+    if query:
+        employees = Employee.objects.filter(
+            first_name__icontains=query
+        ) | Employee.objects.filter(last_name__icontains=query)
+    else:
+        employees = Employee.objects.all()
+    return render(
+        request, "payroll/employee_list.html", {"employees": employees, "query": query}
+    )
 
 
 # View to display all payroll records
@@ -50,3 +58,9 @@ def delete_employee(request, id):
     employee = get_object_or_404(Employee, id=id)
     employee.delete()
     return redirect("employee_list")
+
+
+# View to display employee details
+def employee_detail(request, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+    return render(request, "payroll/employee_detail.html", {"employee": employee})
